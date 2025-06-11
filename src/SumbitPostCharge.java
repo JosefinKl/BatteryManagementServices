@@ -5,31 +5,65 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Objects;
+import java.util.Scanner;
 
 public class SumbitPostCharge {
     public static void main(String[] args) {
         Info info = new Info();
 
         LoadInfo information = info.performGetRequest();
-//        System.out.println(info);
+
         double currentLoad = information.baseCurrentLoad;
         double batteryCapacity = information.batteryCapacity;
+        double durationSeconds = 0;
 
 
-        startStopCharging("on");
-        //time to load the battery
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        boolean b = true;
+
+        while(b) {
+            System.out.println("Start charging by writing 'on'");
+            Scanner scanner = new Scanner(System.in);
+            String s1 = scanner.nextLine().trim().toLowerCase();
+
+            if (s1.equals("on")) {
+                long startTime = System.currentTimeMillis();
+                startStopCharging("on");
+
+                System.out.println("Charging started. Type 'off' to stop charging:");
+                while (true) {
+                    String s2 = scanner.nextLine().trim().toLowerCase();
+
+                    if (s2.equals("off")) {
+                        long endTime = System.currentTimeMillis();
+                        startStopCharging("off");
+
+                        long durationMillis = endTime - startTime;
+                        durationSeconds = durationMillis / 1000.0;
+
+                        System.out.println("Charging stopped.");
+                        System.out.println("charging for: " + durationSeconds + " seconds");
+                        b = false;
+                        break;
+
+                    } else if (s2.equals("on")) {
+                        System.out.println("Charging is already on. Type 'off' to stop.");
+                    } else {
+                        System.out.println("Invalid input. Type 'off' to stop charging.");
+                    }
+                }
+
+            } else {
+                System.out.println("Charging not started. Please type 'on' to begin.");
+
+            }
         }
-        System.out.println("charging for 5s");
-        startStopCharging("off");
+
 
         //charing capacity 7.4kW
         double chargingStationCapacity = 7.4;
 
-        double chargingAmount = chargingStationCapacity * 5/60;
+        double chargingAmount = chargingStationCapacity * durationSeconds / 60;
 //        System.out.println(chargingAmount);
 
         currentLoad = currentLoad + chargingAmount;
@@ -37,9 +71,8 @@ public class SumbitPostCharge {
 
         double loadLevel = currentLoad * 100 / batteryCapacity;
         //to get rid of decimals
-        String newValue = Integer.toString((int)loadLevel);
+        String newValue = Integer.toString((int) loadLevel);
         System.out.println("loadlevel is: " + newValue + "%");
-
 
 
     }

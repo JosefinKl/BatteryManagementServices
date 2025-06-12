@@ -54,17 +54,6 @@ public class ChargeWhenLowConsumption {
 
             System.out.println("Start to charge when time is " + startIndex);
 
-//        //Controll so household total consumption is <11kW
-//        boolean check = true;
-//        for (int i = startIndex; i < startIndex + 4; i++) {
-////            System.out.println(baseLoad[i]);
-//            if (baseLoad[i] + chargeStation > 11) {
-////                System.out.println(baseLoad[i]);
-//                check = false;
-//                break;
-//            }
-//        }
-//        System.out.println(check);
 
             SetBatteryTo20Percent.setBatteryTo20Percent();
             while (true) {

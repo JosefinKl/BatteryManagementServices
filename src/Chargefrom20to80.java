@@ -10,9 +10,9 @@ public class Chargefrom20to80 {
     public static void perform(){
         SetBatteryTo20Percent setBatteryTo20Percent = new SetBatteryTo20Percent();
         setBatteryTo20Percent.setBatteryTo20Percent();
-        Info info = new Info();
-        double batteryCapcity = info.performGetRequest();
-        CalculateCurrentChargeLevel.ChargeLevel(batteryCapcity);
+//        Info info = new Info();
+//        double batteryCapcity = info.performGetRequest();
+//        CalculateCurrentChargeLevel.ChargeLevel(batteryCapcity);
 
 
         StartStopCharging.startStopCharging("on");
@@ -22,7 +22,7 @@ public class Chargefrom20to80 {
 
         scheduler.scheduleAtFixedRate(() -> {
             Info info2 = new Info();
-            double batteryCapacity = info.performGetRequest();
+            double batteryCapacity = info2.performGetRequest();
             double chargeLevel = CalculateCurrentChargeLevel.ChargeLevel(batteryCapacity);
 
 

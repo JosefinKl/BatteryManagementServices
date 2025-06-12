@@ -1,4 +1,7 @@
 import java.util.Scanner;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class StartStopChargingByCommand {
     public static void main(String[] args) {
@@ -24,10 +27,21 @@ public class StartStopChargingByCommand {
                 StartStopCharging.startStopCharging("on");
 
                 System.out.println("Charging started. Type 'off' to stop charging:");
+
+
+                ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+
+                // Schedule the task to run every 4 seconds, starting immediately
+                scheduler.scheduleAtFixedRate(() -> {
+                    Info.performGetRequest();
+                }, 0, 5, TimeUnit.SECONDS);
+
+
                 while (true) {
                     String s2 = scanner.nextLine().trim().toLowerCase();
 
                     if (s2.equals("off")) {
+                        scheduler.shutdown();
                         long endTime = System.currentTimeMillis();
 //                        startStopCharging("off");
                         StartStopCharging.startStopCharging("off");
@@ -38,6 +52,7 @@ public class StartStopChargingByCommand {
                         System.out.println("Charging stopped.");
                         System.out.println("charging for: " + durationSeconds + " seconds");
                         b = false;
+
                         break;
 
                     } else if (s2.equals("on")) {

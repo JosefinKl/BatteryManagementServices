@@ -12,9 +12,11 @@ public class Info {
         performGetRequest();
     }
 
-    public static LoadInfo performGetRequest() {
-        double baseCurrentLoad = 0;
+    public static double performGetRequest() {
+//        double baseCurrentLoad = 0;
         double batteryCapacity = 0;
+        double batteryMaxCapacity = 46.3; //kWh
+
         try {
             URL url = new URL("http://127.0.0.1:5000/info");
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
@@ -30,17 +32,22 @@ public class Info {
 
                 JSONObject json = new JSONObject(content.toString());
 
-                baseCurrentLoad = json.getDouble("base_current_load");
+//                baseCurrentLoad = json.getDouble("base_current_load");
                 batteryCapacity = json.getDouble("battery_capacity_kWh");
 
-                double loadLevel = baseCurrentLoad * 100 / batteryCapacity ;
-                System.out.println("baseCurrentLoad: " + baseCurrentLoad);
+//                double loadLevel = baseCurrentLoad * 100 / batteryCapacity ;
+//                System.out.println("baseCurrentLoad: " + baseCurrentLoad);
                 System.out.println("battery capacity: " + batteryCapacity);
 
+//                double chargeLevel = batteryCapacity * 100 / batteryMaxCapacity;
 
+                System.out.println(content);
                 //to get rid of decimals
-                String newValue = Integer.toString((int)loadLevel);
-                System.out.println("loadlevel is: " + newValue + "%");
+//                String newValue = Integer.toString((int)chargeLevel);
+//                System.out.println("Charge level is: " + newValue + "%");
+
+                CalculateCurrentChargeLevel calculateCurrentChargeLevel = new CalculateCurrentChargeLevel();
+                double ChargeLevel = calculateCurrentChargeLevel.ChargeLevel(batteryCapacity);
 
 
 
@@ -53,7 +60,7 @@ public class Info {
         }
 
 
-        return new LoadInfo(baseCurrentLoad, batteryCapacity);
+        return batteryCapacity;
     }
 
 }

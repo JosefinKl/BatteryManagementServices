@@ -63,4 +63,21 @@ public class Info {
         return batteryCapacity;
     }
 
+    public static int getSimulatedTime() {
+        try {
+            URL url = new URL("http://127.0.0.1:5000/info");
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("GET");
+
+            try (BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
+                String json = in.readLine();
+                String hourPart = json.split("\"sim_time_hour\":")[1].split(",")[0].trim();
+                return Integer.parseInt(hourPart);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return -1;
+        }
+    }
+
 }

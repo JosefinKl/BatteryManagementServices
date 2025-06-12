@@ -5,12 +5,19 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-public class PriceForHouse {
+public class BaseLoadHouse {
     public static void main(String[] args) {
-        performGetRequest();
+        double[] values = performGetRequest();
+
+        if (values != null) {
+            System.out.println("Prices per hour:");
+            for (double d : values) {
+                System.out.println(d);
+            }
+        }
     }
 
-    public static void performGetRequest() {
+    public static double[] performGetRequest() {
         try {
             URL url = new URL("http://127.0.0.1:5000/baseload");
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
@@ -23,8 +30,21 @@ public class PriceForHouse {
                 while ((inputLine = in.readLine()) != null) {
                     content.append(inputLine);
                 }
+                // Clean the string and parse to double[]
+                String json = content.toString()
+                        .replace("[", "")
+                        .replace("]", "")
+                        .trim();
 
-                System.out.println("Energy consumption per hour: " + content.toString());
+                String[] parts = json.split(",");
+
+                double[] result = new double[parts.length];
+                for (int i = 0; i < parts.length; i++) {
+                    result[i] = Double.parseDouble(parts[i]);
+                }
+
+                return result;
+
             }
 
         } catch (MalformedURLException ex) {
@@ -32,6 +52,7 @@ public class PriceForHouse {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
+        return null;
     }
 
 

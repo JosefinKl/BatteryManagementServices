@@ -37,43 +37,52 @@ public class ChargeWhenLowConsumption {
         for (int i = 0; i <= baseLoad.length - 4; i++) {
             double currentSum = baseLoad[i] + baseLoad[i + 1] + baseLoad[i + 2] + baseLoad[i + 3];
 
-            if (currentSum < minSum) {
+            boolean allBelow11kW = true;
+            for (int j = 0; j < 4; j++) {
+                if (baseLoad[i + j] + chargeStation > 11) {
+                    allBelow11kW = false;
+                    break;
+                }
+            }
+
+            if (currentSum < minSum && allBelow11kW) {
                 minSum = currentSum;
                 startIndex = i;
+
             }
         }
 
-        System.out.println("Start to charge when time is " + startIndex);
+            System.out.println("Start to charge when time is " + startIndex);
 
-        //Controll so household total consumption is <11kW
-        boolean check = true;
-        for (int i = startIndex; i < startIndex + 4; i++) {
-//            System.out.println(baseLoad[i]);
-            if (baseLoad[i] + chargeStation > 11) {
-//                System.out.println(baseLoad[i]);
-                check = false;
-                break;
-            }
-        }
+//        //Controll so household total consumption is <11kW
+//        boolean check = true;
+//        for (int i = startIndex; i < startIndex + 4; i++) {
+////            System.out.println(baseLoad[i]);
+//            if (baseLoad[i] + chargeStation > 11) {
+////                System.out.println(baseLoad[i]);
+//                check = false;
+//                break;
+//            }
+//        }
 //        System.out.println(check);
 
-        SetBatteryTo20Percent.setBatteryTo20Percent();
-        while (check) {
+            SetBatteryTo20Percent.setBatteryTo20Percent();
+            while (true) {
 
-            int currentHour = Info.getSimulatedTime();
+                int currentHour = Info.getSimulatedTime();
 
-            if (currentHour == startIndex) {
-                Chargefrom20to80.perform();
-                break;
-            } else {
-                try {
-                    Thread.sleep(5000); // Wait 5s (hence the data will be updated)
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                if (currentHour == startIndex) {
+                    Chargefrom20to80.perform();
+                    break;
+                } else {
+                    try {
+                        Thread.sleep(5000); // Wait 5s (hence the data will be updated)
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
                 }
 
             }
-
         }
     }
-}

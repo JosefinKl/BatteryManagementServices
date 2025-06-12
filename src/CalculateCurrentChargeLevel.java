@@ -13,10 +13,10 @@ public class CalculateCurrentChargeLevel {
         double chargeLevel = batteryCapacity * 100 / batteryMaxCapacity;
 
         //to get rid of decimals
-        String newValue = Integer.toString((int)chargeLevel);
+        double newValue = Math.round(chargeLevel);
         System.out.println("Charge level is: " + newValue + "%");
 
-        return chargeLevel;
+        return newValue;
     }
 
 

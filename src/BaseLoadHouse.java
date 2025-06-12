@@ -10,7 +10,7 @@ public class BaseLoadHouse {
         double[] values = performGetRequest();
 
         if (values != null) {
-            System.out.println("Prices per hour:");
+            System.out.println("Base Load per hour:");
             for (double d : values) {
                 System.out.println(d);
             }

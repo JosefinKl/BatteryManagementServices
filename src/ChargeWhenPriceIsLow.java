@@ -1,15 +1,14 @@
-public class ChargeWhenLowConsumption {
+public class ChargeWhenPriceIsLow {
     public static void main(String[] args) {
-        chargeWhenLowConsumption();
-
+        chargeWhenPriceIsLow();
     }
-
-    public static void chargeWhenLowConsumption() {
+    public static void chargeWhenPriceIsLow() {
+        double[] prices = SubmitGetPriceInfo.performGetRequest();
         double[] baseLoad = BaseLoadHouse.performGetRequest();
 
-        if (baseLoad != null) {
-            System.out.println("Baseload per hour:");
-            for (double d : baseLoad) {
+        if (prices != null) {
+            System.out.println("Prices per hour:");
+            for (double d : prices) {
                 System.out.println(d);
             }
         }
@@ -31,34 +30,31 @@ public class ChargeWhenLowConsumption {
 //        System.out.println("The charging time is " + timeToCharge + " hours");
         System.out.println("The charging time is " + timeToChargeRoundedUp + " hours");
 
-        //Since time to charge is 4h, check when the baseLoad is lowest for 4 hours in a row (assumes the charging needs to be in a row)
+        //Since time to charge is 4h, check when the prices is lowest for 4 hours in a row (assumes the charging needs to be in a row), also check total consumption.
         double minSum = Double.MAX_VALUE;
         int startIndex = 0;
-        for (int i = 0; i <= baseLoad.length - 4; i++) {
-            double currentSum = baseLoad[i] + baseLoad[i + 1] + baseLoad[i + 2] + baseLoad[i + 3];
+        for (int i = 0; i <= prices.length - 4; i++) {
+            double currentSum = prices[i] + prices[i + 1] + prices[i + 2] + prices[i + 3];
 
-            if (currentSum < minSum) {
+            boolean allBelow11kW = true;
+            for (int j = 0; j < 4; j++) {
+                if (baseLoad[i + j] + chargeStation > 11) {
+                    allBelow11kW = false;
+                    break;
+                }
+            }
+
+            if (currentSum < minSum && allBelow11kW) {
                 minSum = currentSum;
                 startIndex = i;
             }
         }
 
-        System.out.println("Start to charge when time is " + startIndex);
+        System.out.println("Start to charge when hours is " + startIndex);
 
-        //Controll so household total consumption is <11kW
-        boolean check = true;
-        for (int i = startIndex; i < startIndex + 4; i++) {
-//            System.out.println(baseLoad[i]);
-            if (baseLoad[i] + chargeStation > 11) {
-//                System.out.println(baseLoad[i]);
-                check = false;
-                break;
-            }
-        }
-//        System.out.println(check);
 
         SetBatteryTo20Percent.setBatteryTo20Percent();
-        while (check) {
+        while (true) {
 
             int currentHour = Info.getSimulatedTime();
 
@@ -76,4 +72,6 @@ public class ChargeWhenLowConsumption {
 
         }
     }
-}
+
+    }
+

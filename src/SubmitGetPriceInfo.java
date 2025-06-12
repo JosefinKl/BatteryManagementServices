@@ -7,10 +7,17 @@ import java.net.URL;
 
 public class SubmitGetPriceInfo {
     public static void main(String[] args) {
-        performGetRequest();
+        double[] values = performGetRequest();
+
+        if (values != null) {
+            System.out.println("Prices per hour:");
+            for (double d : values) {
+                System.out.println(d);
+            }
+        }
     }
 
-    public static void performGetRequest() {
+    public static double[] performGetRequest() {
         try {
             URL url = new URL("http://127.0.0.1:5000/priceperhour");
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
@@ -23,8 +30,20 @@ public class SubmitGetPriceInfo {
                 while ((inputLine = in.readLine()) != null) {
                     content.append(inputLine);
                 }
+// Clean the string and parse to double[]
+                String json = content.toString()
+                        .replace("[", "")
+                        .replace("]", "")
+                        .trim();
 
-                System.out.println("Price per hour: " + content.toString());
+                String[] parts = json.split(",");
+
+                double[] result = new double[parts.length];
+                for (int i = 0; i < parts.length; i++) {
+                    result[i] = Double.parseDouble(parts[i]);
+                }
+
+                return result;
             }
 
         } catch (MalformedURLException ex) {
@@ -32,6 +51,7 @@ public class SubmitGetPriceInfo {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
+        return null;
     }
 
 }
